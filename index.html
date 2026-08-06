@@ -1,211 +1,187 @@
-html<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <!-- Thẻ quan trọng nhất để kích hoạt giao diện Mobile -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trang Chủ Mobile</title>
+    <title>Dashboard Doanh Thu</title>
+    <!-- Google Fonts & Tailwind CSS CDN để dựng giao diện nhanh -->
+    <script src="https://tailwindcss.com"></script>
+    <!-- Chart.js để vẽ biểu đồ doanh thu -->
+    <script src="https://jsdelivr.net"></script>
+    <!-- FontAwesome để lấy các icon -->
+    <link rel="stylesheet" href="https://cloudflare.com">
     <style>
-        /* Reset CSS cơ bản */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-        }
-
-        body {
-            background-color: #f5f5f5;
-            color: #333;
-            line-height: 1.6;
-        }
-
-        /* Thanh điều hướng Header phía trên */
-        header {
-            background-color: #007bff;
-            color: white;
-            padding: 15px;
-            text-align: center;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            font-weight: bold;
-            font-size: 1.2rem;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        /* Khung nội dung chính */
-        main {
-            padding: 15px;
-            max-width: 600px; /* Giới hạn độ rộng tối đa chuẩn mobile */
-            margin: 0 auto;
-            margin-bottom: 70px; /* Chừa khoảng trống cho thanh menu dưới đáy */
-        }
-
-        /* Banner quảng cáo/Giới thiệu */
-        .banner {
-            background: linear-gradient(135deg, #007bff, #00c6ff);
-            color: white;
-            padding: 30px 20px;
-            border-radius: 12px;
-            text-align: center;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
-        }
-
-        .banner h1 {
-            font-size: 1.5rem;
-            margin-bottom: 10px;
-        }
-
-        /* Danh mục / Lưới sản phẩm - bài viết */
-        .section-title {
-            font-size: 1.1rem;
-            margin-bottom: 12px;
-            color: #444;
-            border-left: 4px solid #007bff;
-            padding-left: 8px;
-        }
-
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr); /* Chia 2 cột đều nhau trên điện thoại */
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .card {
-            background: white;
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            transition: transform 0.2s;
-        }
-
-        .card:active {
-            transform: scale(0.98); /* Hiệu ứng nhấn giữ trên màn hình cảm ứng */
-        }
-
-        .card .icon {
-            font-size: 2rem;
-            margin-bottom: 8px;
-            display: block;
-        }
-
-        .card h3 {
-            font-size: 0.95rem;
-            margin-bottom: 5px;
-        }
-
-        .card p {
-            font-size: 0.8rem;
-            color: #777;
-        }
-
-        /* Thanh Menu Điều Hướng Dưới Đáy (Bottom Navigation chuẩn App Mobile) */
-        nav.bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 60px;
-            background-color: white;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-            z-index: 1000;
-        }
-
-        .nav-item {
-            text-decoration: none;
-            color: #666;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            font-size: 0.75rem;
-            flex: 1;
-        }
-
-        .nav-item.active {
-            color: #007bff;
-        }
-
-        .nav-item i {
-            font-size: 1.3rem;
-            margin-bottom: 2px;
-        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        /* Ẩn thanh cuộn nhưng vẫn cuộn được */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body>
+<body class="bg-gray-50 text-gray-800 pb-20">
 
-    <!-- Header ứng dụng -->
-    <header>
-        Tên Ứng Dụng / Cửa Hàng
+    <!-- HEADER -->
+    <header class="bg-indigo-600 text-white px-4 pt-6 pb-4 sticky top-0 z-50 shadow-md">
+        <div class="flex justify-between items-center">
+            <div>
+                <p class="text-xs text-indigo-200">Xin chào, Quản trị viên</p>
+                <h1 class="text-lg font-bold">Báo Cáo Doanh Thu</h1>
+            </div>
+            <button class="relative p-2 bg-indigo-700 rounded-full text-white">
+                <i class="fa-solid fa-bell"></i>
+                <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+            </button>
+        </div>
     </header>
 
-    <!-- Khu vực nội dung cuộn -->
-    <main>
-        <!-- Banner nổi bật -->
-        <div class="banner">
-            <h1>Chào mừng bạn!</h1>
-            <p>Trải nghiệm giao diện mượt mà tối ưu trên thiết bị di động.</p>
+    <!-- BỘ LỌC THỜI GIAN NHANH (Ngang - Cuộn mượt trên Mobile) -->
+    <div class="flex space-x-2 overflow-x-auto px-4 py-3 bg-white shadow-sm no-scrollbar">
+        <button class="px-4 py-1.5 bg-indigo-100 text-indigo-700 rounded-full text-xs font-semibold whitespace-nowrap">Hôm nay</button>
+        <button class="px-4 py-1.5 bg-gray-100 text-gray-600 rounded-full text-xs font-semibold whitespace-nowrap">Tuần này</button>
+        <button class="px-4 py-1.5 bg-gray-100 text-gray-600 rounded-full text-xs font-semibold whitespace-nowrap">Tháng này</button>
+        <button class="px-4 py-1.5 bg-gray-100 text-gray-600 rounded-full text-xs font-semibold whitespace-nowrap">Quý này</button>
+    </div>
+
+    <!-- KHU VỰC CHỨA NỘI DUNG CHÍNH -->
+    <main class="p-4 space-y-4">
+
+        <!-- THẺ THỐNG KÊ KPI -->
+        <div class="grid grid-cols-2 gap-3">
+            <!-- Thẻ Doanh Thu -->
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-xs text-gray-400 font-medium">Tổng doanh thu</span>
+                    <span class="w-7 h-7 flex items-center justify-center bg-green-50 text-green-600 rounded-full text-xs">
+                        <i class="fa-solid fa-wallet"></i>
+                    </span>
+                </div>
+                <h3 class="text-base font-bold text-gray-900">142.50M</h3>
+                <span class="text-[10px] text-green-500 font-medium"><i class="fa-solid fa-arrow-trend-up"></i> +12.5%</span>
+            </div>
+
+            <!-- Thẻ Đơn Hàng -->
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-xs text-gray-400 font-medium">Số đơn hàng</span>
+                    <span class="w-7 h-7 flex items-center justify-center bg-blue-50 text-blue-600 rounded-full text-xs">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                    </span>
+                </div>
+                <h3 class="text-base font-bold text-gray-900">1,240</h3>
+                <span class="text-[10px] text-green-500 font-medium"><i class="fa-solid fa-arrow-trend-up"></i> +8.2%</span>
+            </div>
+
+            <!-- Thẻ Chi Phí -->
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-xs text-gray-400 font-medium">Tổng chi phí</span>
+                    <span class="w-7 h-7 flex items-center justify-center bg-red-50 text-red-600 rounded-full text-xs">
+                        <i class="fa-solid fa-arrow-down-up-lock"></i>
+                    </span>
+                </div>
+                <h3 class="text-base font-bold text-gray-900">32.80M</h3>
+                <span class="text-[10px] text-red-500 font-medium"><i class="fa-solid fa-arrow-trend-down"></i> -2.1%</span>
+            </div>
+
+            <!-- Thẻ Lợi Nhuận -->
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-xs text-gray-400 font-medium">Lợi nhuận ròng</span>
+                    <span class="w-7 h-7 flex items-center justify-center bg-purple-50 text-purple-600 rounded-full text-xs">
+                        <i class="fa-solid fa-chart-pie"></i>
+                    </span>
+                </div>
+                <h3 class="text-base font-bold text-gray-900">109.70M</h3>
+                <span class="text-[10px] text-green-500 font-medium"><i class="fa-solid fa-arrow-trend-up"></i> +15.3%</span>
+            </div>
         </div>
 
-        <!-- Tiêu đề mục -->
-        <h2 class="section-title">Danh mục dịch vụ</h2>
-
-        <!-- Lưới tính năng chính -->
-        <div class="grid-container">
-            <div class="card">
-                <span class="icon">🛒</span>
-                <h3>Mua sắm</h3>
-                <p>Sản phẩm mới</p>
+        <!-- BIỂU ĐỒ DOANH THU (Line Chart) -->
+        <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="text-sm font-bold text-gray-900">Xu hướng doanh thu</h2>
+                <span class="text-xs text-indigo-600 font-medium">7 ngày qua</span>
             </div>
-            <div class="card">
-                <span class="icon">🔥</span>
-                <h3>Khuyến mãi</h3>
-                <p>Ưu đãi cực khủng</p>
-            </div>
-            <div class="card">
-                <span class="icon">📦</span>
-                <h3>Đơn hàng</h3>
-                <p>Quản lý lịch sử</p>
-            </div>
-            <div class="card">
-                <span class="icon">💬</span>
-                <h3>Hỗ trợ</h3>
-                <p>Chat trực tuyến</p>
+            <div class="w-full h-48">
+                <canvas id="revenueChart"></canvas>
             </div>
         </div>
 
-        <h2 class="section-title">Tin tức mới nhất</h2>
-        <div style="background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
-            <h4 style="font-size: 1rem; margin-bottom: 5px;">Mẹo tối ưu trang web Mobile năm 2026</h4>
-            <p style="font-size: 0.85rem; color: #666;">Hãy luôn sử dụng thẻ meta viewport và thiết kế nút bấm đủ lớn cho ngón tay dễ thao tác...</p>
+        <!-- DANH SÁCH GIAO DỊCH GẦN ĐÂY -->
+        <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="text-sm font-bold text-gray-900">Giao dịch gần đây</h2>
+                <a href="#" class="text-xs text-indigo-600 font-medium">Xem tất cả</a>
+            </div>
+            <div class="space-y-3">
+                <!-- Item 1 -->
+                <div class="flex justify-between items-center pb-2 border-b border-gray-50 last:border-0 last:pb-0">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-9 h-9 rounded-xl bg-green-50 flex items-center justify-center text-green-600 text-xs font-bold">
+                            +
+                        </div>
+                        <div>
+                            <p class="text-xs font-semibold text-gray-800">Đơn hàng #DH-9921</p>
+                            <p class="text-[10px] text-gray-400">10:24 • Chuyển khoản ngân hàng</p>
+                        </div>
+                    </div>
+                    <span class="text-xs font-bold text-green-600">+1,250,000đ</span>
+                </div>
+                <!-- Item 2 -->
+                <div class="flex justify-between items-center pb-2 border-b border-gray-50 last:border-0 last:pb-0">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-9 h-9 rounded-xl bg-green-50 flex items-center justify-center text-green-600 text-xs font-bold">
+                            +
+                        </div>
+                        <div>
+                            <p class="text-xs font-semibold text-gray-800">Đơn hàng #DH-9920</p>
+                            <p class="text-[10px] text-gray-400">09:15 • Ví điện tử MoMo</p>
+                        </div>
+                    </div>
+                    <span class="text-xs font-bold text-green-600">+450,000đ</span>
+                </div>
+                <!-- Item 3 -->
+                <div class="flex justify-between items-center pb-2 border-b border-gray-50 last:border-0 last:pb-0">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-9 h-9 rounded-xl bg-red-50 flex items-center justify-center text-red-600 text-xs font-bold">
+                            -
+                        </div>
+                        <div>
+                            <p class="text-xs font-semibold text-gray-800">Hoàn tiền #DH-9810</p>
+                            <p class="text-[10px] text-gray-400">Hôm qua • Khách hủy đơn</p>
+                        </div>
+                    </div>
+                    <span class="text-xs font-bold text-red-600">-890,000đ</span>
+                </div>
+            </div>
         </div>
+
     </main>
 
-    <!-- Thanh Menu Bottom chuẩn Mobile App -->
-    <nav class="bottom-nav">
-        <a href="#" class="nav-item active">
-            <i>🏠</i>
-            <span>Trang chủ</span>
+    <!-- THANH ĐIỀU HƯỚNG DƯỚI CÙNG (BOTTOM NAVIGATION) -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-6 py-2 flex justify-between items-center z-50">
+        <a href="#" class="flex flex-col items-center text-gray-400">
+            <i class="fa-solid fa-house text-lg"></i>
+            <span class="text-[10px] mt-0.5">Trang chủ</span>
         </a>
-        <a href="#" class="nav-item">
-            <i>🔍</i>
-            <span>Tìm kiếm</span>
+        <a href="#" class="flex flex-col items-center text-indigo-600">
+            <i class="fa-solid fa-chart-line text-lg"></i>
+            <span class="text-[10px] mt-0.5 font-medium">Doanh thu</span>
         </a>
-        <a href="#" class="nav-item">
-            <i>🔔</i>
-            <span>Thông báo</span>
+        <a href="#" class="flex flex-col items-center text-gray-400">
+            <i class="fa-solid fa-box text-lg"></i>
+            <span class="text-[10px] mt-0.5">Sản phẩm</span>
         </a>
-        <a href="#" class="nav-item">
-            <i>👤</i>
-            <span>Tài khoản</span>
+        <a href="#" class="flex flex-col items-center text-gray-400">
+            <i class="fa-solid fa-gear text-lg"></i>
+            <span class="text-[10px] mt-0.5">Cài đặt</span>
         </a>
     </nav>
 
-</body>
-</html>
+    <!-- JAVASCRIPT KHỞI TẠO BIỂU ĐỒ -->
+    <script>
+        const ctx = document.getElementById('revenueChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Th 2', 'Th 3', 'Th 4', 'Th 5', 'Th 6', 'Th 7', 'CN'],
+Hãy thận trọng khi sử dụng mã.datasets: [{label: 'Doanh thu (triệu)',data: [12, 19, 15, 22, 30, 28],borderColor: 'rgb(79, 70, 229)',backgroundColor: 'rgba(79, 70, 229, 0.1)',borderWidth: 2,fill: true,tension: 0.4, // Tạo đường cong mượtpointRadius: 3}]},options: {responsive: true,maintainAspectRatio: false,plugins: {legend: { display: false } // Ẩn nhãn chú thích để tiết kiệm không gian mobile},scales: {y: {grid: { display: true, color: '#f3f4f6' },ticks: { font: { size: 10 } }},x: {grid: { display: false },ticks: { font: { size: 10 } }}}}});
