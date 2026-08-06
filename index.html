@@ -3,73 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng Nhập Hệ Thống</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
+    <title>Quản Lý Thu Chi</title>
+    <!-- Font chữ & Icon -->
+    <link href="https://googleapis.com" rel="stylesheet">
     <link rel="stylesheet" href="https://cloudflare.com">
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    </style>
+    <!-- Chart.js để vẽ biểu đồ đẹp mắt -->
+    <script src="https://jsdelivr.net"></script>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-gray-50 flex flex-col justify-between min-h-screen p-6">
+<body>
 
-    <!-- KHU VỰC TRÊN: LOGO & CHÀO MỪNG -->
-    <div class="w-full max-w-sm mx-auto pt-12 text-center">
-        <!-- Logo Giả Lập -->
-        <div class="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg shadow-indigo-100 mb-6">
-            <i class="fa-solid fa-chart-pie text-white text-2xl"></i>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="user-info">
+                <img src="https://unsplash.com" alt="Avatar" class="avatar">
+                <div>
+                    <span class="welcome">Xin chào,</span>
+                    <h2 class="username">Người dùng</h2>
+                </div>
+            </div>
+            <button class="notification-btn"><i class="fa-regular fa-bell"></i></button>
+        </header>
+
+        <!-- Thẻ tổng số dư (Ví điện tử phong cách Neomorphism/Glassmorphism) -->
+        <div class="balance-card">
+            <p class="card-label">Tổng số dư khả dụng</p>
+            <h1 class="total-balance" id="totalBalance">0đ</h1>
+            <div class="card-stats">
+                <div class="stat-item income">
+                    <i class="fa-solid fa-arrow-down"></i>
+                    <div>
+                        <span>Thu nhập</span>
+                        <p id="totalIncome">0đ</p>
+                    </div>
+                </div>
+                <div class="stat-item expense">
+                    <i class="fa-solid fa-arrow-up"></i>
+                    <div>
+                        <span>Chi tiêu</span>
+                        <p id="totalExpense">0đ</p>
+                    </div>
+                </div>
+            </div>
         </div>
-        <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Chào mừng trở lại</h1>
-        <p class="text-sm text-gray-500 mt-1">Vui lòng đăng nhập để quản lý doanh thu</p>
-    </div>
 
-    <!-- KHU VỰC GIỮA: NÚT ĐĂNG NHẬP GMAIL CHÍNH -->
-    <div class="w-full max-w-sm mx-auto space-y-4 my-auto">
-        <!-- Nút Đăng nhập bằng Google (Gmail) -->
-        <button id="google-login-btn" class="w-full flex items-center justify-center space-x-3 bg-white border border-gray-300 text-gray-700 font-semibold py-3.5 px-4 rounded-xl shadow-sm active:scale-[0.98] active:bg-gray-50 transition-all duration-150">
-            <!-- Icon Google chuẩn màu -->
-            <svg class="w-5 h-5" viewBox="0 0 24 24">
-                <path fill="#EA4335" d="M12.24 10.285V14.4h6.887c-.275 1.565-1.88 4.604-6.887 4.604-4.33 0-7.866-3.577-7.866-8s3.536-8 7.866-8c2.46 0 4.105 1.025 5.047 1.926l3.227-3.111C18.263 1.157 15.45 0 12.24 0 5.48 0 0 5.373 0 12s5.48 12 12.24 12c7.06 0 11.758-4.918 11.758-11.83 0-.796-.086-1.405-.19-1.885H12.24Z"/>
-            </svg>
-            <span class="text-sm">Tiếp tục với Google (Gmail)</span>
+        <!-- Vùng đồ thị báo cáo -->
+        <div class="chart-section">
+            <h3 class="section-title">Phân tích chi tiêu</h3>
+            <div class="chart-container">
+                <canvas id="expenseChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Danh sách lịch sử giao dịch -->
+        <div class="history-section">
+            <div class="section-header">
+                <h3 class="section-title">Lịch sử giao dịch</h3>
+                <span class="see-all">Tất cả</span>
+            </div>
+            <div class="transaction-list" id="transactionList">
+                <!-- Giao dịch trống hoặc danh sách nạp từ JS -->
+                <div class="empty-state" id="emptyState">
+                    <i class="fa-regular fa-folder-open"></i>
+                    <p>Chưa có giao dịch nào được nhập</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Nút thêm giao dịch nổi bật (Float Action Button) -->
+        <button class="fab-btn" id="openModalBtn">
+            <i class="fa-solid fa-plus"></i>
         </button>
 
-        <!-- Dấu gạch ngang phân cách (Nếu sau này bạn muốn thêm đăng nhập bằng mật khẩu) -->
-        <div class="relative flex py-2 items-center">
-            <div class="flex-grow border-t border-gray-200"></div>
-            <span class="flex-shrink mx-4 text-gray-400 text-xs uppercase tracking-wider">Hoặc truy cập nhanh</span>
-            <div class="flex-grow border-t border-gray-200"></div>
+        <!-- Cửa sổ nhập liệu (Modal Popup bám đáy mobile) -->
+        <div class="modal" id="transactionModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Thêm giao dịch mới</h3>
+                    <button class="close-btn" id="closeModalBtn">&times;</button>
+                </div>
+                <form id="transactionForm">
+                    <!-- Chọn loại giao dịch hình thức Tabs -->
+                    <div class="type-tabs">
+                        <label class="tab-label active">
+                            <input type="radio" name="type" value="income" checked> Thu nhập
+                        </label>
+                        <label class="tab-label">
+                            <input type="radio" name="type" value="expense"> Chi tiêu
+                        </label>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Số tiền (đ)</label>
+                        <input type="number" id="amount" placeholder="0" required min="1">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Danh mục</label>
+                        <select id="category" required>
+                            <option value="Lương">💰 Lương / Thưởng</option>
+                            <option value="Ăn uống">🍔 Ăn uống</option>
+                            <option value="Di chuyển">🚗 Di chuyển</option>
+                            <option value="Mua sắm">🛍️ Mua sắm</option>
+                            <option value="Giải trí">🎬 Giải trí</option>
+                            <option value="Khác">✨ Khoản chi khác</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Ghi chú ngắn</label>
+                        <input type="text" id="description" placeholder="Nhập lý do thu/chi...">
+                    </div>
+
+                    <button type="submit" class="submit-btn">Lưu giao dịch</button>
+                </form>
+            </div>
         </div>
-
-        <!-- Nút Demo đi thẳng vào ứng dụng (Dành cho nhà phát triển/kiểm thử) -->
-        <button onclick="window.location.href='index.html'" class="w-full bg-indigo-50 text-indigo-600 hover:bg-indigo-100 font-medium py-3 px-4 rounded-xl text-xs text-center transition-colors">
-            Vào thẳng Dashboard (Giao diện Demo)
-        </button>
     </div>
 
-    <!-- KHU VỰC DƯỚI: ĐIỀU KHOẢN & BẢO MẬT -->
-    <div class="w-full max-w-sm mx-auto text-center pt-6">
-        <p class="text-[11px] text-gray-400 leading-relaxed">
-            Bằng cách tiếp tục, bạn đồng ý với <a href="#" class="underline text-gray-500">Điều khoản dịch vụ</a> và <a href="#" class="underline text-gray-500">Chính sách bảo mật</a> của chúng tôi.
-        </p>
-    </div>
-
-    <!-- SCRIPT XỬ LÝ SỰ KIỆN ĐĂNG NHẬP -->
-    <script>
-        document.getElementById('google-login-btn').addEventListener('click', function() {
-            // Hiệu ứng tải (Loading) giả lập khi user bấm vào
-            this.disabled = true;
-            this.innerHTML = `
-                <i class="fa-solid fa-circle-notch animate-spin text-gray-500 text-lg"></i>
-                <span class="text-sm text-gray-500">Đang kết nối tới Google...</span>
-            `;
-            
-            // Giả lập sau 1.5 giây xác thực thành công sẽ chuyển hướng sang trang doanh thu
-            setTimeout(() => {
-                window.location.href = 'index.html'; 
-            }, 1500);
-        });
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
