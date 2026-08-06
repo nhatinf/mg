@@ -1,0 +1,211 @@
+html<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <!-- Thẻ quan trọng nhất để kích hoạt giao diện Mobile -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang Chủ Mobile</title>
+    <style>
+        /* Reset CSS cơ bản */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* Thanh điều hướng Header phía trên */
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        /* Khung nội dung chính */
+        main {
+            padding: 15px;
+            max-width: 600px; /* Giới hạn độ rộng tối đa chuẩn mobile */
+            margin: 0 auto;
+            margin-bottom: 70px; /* Chừa khoảng trống cho thanh menu dưới đáy */
+        }
+
+        /* Banner quảng cáo/Giới thiệu */
+        .banner {
+            background: linear-gradient(135deg, #007bff, #00c6ff);
+            color: white;
+            padding: 30px 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
+        }
+
+        .banner h1 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        /* Danh mục / Lưới sản phẩm - bài viết */
+        .section-title {
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+            color: #444;
+            border-left: 4px solid #007bff;
+            padding-left: 8px;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* Chia 2 cột đều nhau trên điện thoại */
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+
+        .card:active {
+            transform: scale(0.98); /* Hiệu ứng nhấn giữ trên màn hình cảm ứng */
+        }
+
+        .card .icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .card h3 {
+            font-size: 0.95rem;
+            margin-bottom: 5px;
+        }
+
+        .card p {
+            font-size: 0.8rem;
+            color: #777;
+        }
+
+        /* Thanh Menu Điều Hướng Dưới Đáy (Bottom Navigation chuẩn App Mobile) */
+        nav.bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background-color: white;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        .nav-item {
+            text-decoration: none;
+            color: #666;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.75rem;
+            flex: 1;
+        }
+
+        .nav-item.active {
+            color: #007bff;
+        }
+
+        .nav-item i {
+            font-size: 1.3rem;
+            margin-bottom: 2px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header ứng dụng -->
+    <header>
+        Tên Ứng Dụng / Cửa Hàng
+    </header>
+
+    <!-- Khu vực nội dung cuộn -->
+    <main>
+        <!-- Banner nổi bật -->
+        <div class="banner">
+            <h1>Chào mừng bạn!</h1>
+            <p>Trải nghiệm giao diện mượt mà tối ưu trên thiết bị di động.</p>
+        </div>
+
+        <!-- Tiêu đề mục -->
+        <h2 class="section-title">Danh mục dịch vụ</h2>
+
+        <!-- Lưới tính năng chính -->
+        <div class="grid-container">
+            <div class="card">
+                <span class="icon">🛒</span>
+                <h3>Mua sắm</h3>
+                <p>Sản phẩm mới</p>
+            </div>
+            <div class="card">
+                <span class="icon">🔥</span>
+                <h3>Khuyến mãi</h3>
+                <p>Ưu đãi cực khủng</p>
+            </div>
+            <div class="card">
+                <span class="icon">📦</span>
+                <h3>Đơn hàng</h3>
+                <p>Quản lý lịch sử</p>
+            </div>
+            <div class="card">
+                <span class="icon">💬</span>
+                <h3>Hỗ trợ</h3>
+                <p>Chat trực tuyến</p>
+            </div>
+        </div>
+
+        <h2 class="section-title">Tin tức mới nhất</h2>
+        <div style="background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+            <h4 style="font-size: 1rem; margin-bottom: 5px;">Mẹo tối ưu trang web Mobile năm 2026</h4>
+            <p style="font-size: 0.85rem; color: #666;">Hãy luôn sử dụng thẻ meta viewport và thiết kế nút bấm đủ lớn cho ngón tay dễ thao tác...</p>
+        </div>
+    </main>
+
+    <!-- Thanh Menu Bottom chuẩn Mobile App -->
+    <nav class="bottom-nav">
+        <a href="#" class="nav-item active">
+            <i>🏠</i>
+            <span>Trang chủ</span>
+        </a>
+        <a href="#" class="nav-item">
+            <i>🔍</i>
+            <span>Tìm kiếm</span>
+        </a>
+        <a href="#" class="nav-item">
+            <i>🔔</i>
+            <span>Thông báo</span>
+        </a>
+        <a href="#" class="nav-item">
+            <i>👤</i>
+            <span>Tài khoản</span>
+        </a>
+    </nav>
+
+</body>
+</html>
