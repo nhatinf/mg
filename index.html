@@ -60,20 +60,21 @@
 
     <!-- Tích hợp Firebase SDK bằng Modules -->
     <script type="module">
-        import { initializeApp } from "firebase/app";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "firebase/app";
-        import { getFirestore, doc, setDoc, getDoc } from "firebase/app";
+        import { initializeApp } from "https://gstatic.com"";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://gstatic.com";
+        import { getFirestore, doc, setDoc, getDoc } from "https://gstatic.com"";
 
         // Bước 3: Thay thế thông tin cấu hình Firebase của bạn vào đây
         const firebaseConfig = {
-            apiKey: "AIzaSyCtvvb3vC3-yPDkKfQZlAWrlWeYnCPvYeE",
-            authDomain: "mggg-fe8f6.firebaseapp.com",
-            projectId: "mggg-fe8f6",
-            storageBucket: "mggg-fe8f6.firebasestorage.app",
-            messagingSenderId: "81114045852",
-            appId: "1:81114045852:web:c10cca616f8db385693c59"
+            const firebaseConfig = {
+          apiKey: "AIzaSyCtvvb3vC3-yPDkKfQZlAWrlWeYnCPvYeE",
+          authDomain: "mggg-fe8f6.firebaseapp.com",
+          projectId: "mggg-fe8f6",
+          storageBucket: "mggg-fe8f6.firebasestorage.app",
+          messagingSenderId: "81114045852",
+          appId: "1:81114045852:web:c10cca616f8db385693c59"
         };
-
+        
         // Khởi tạo các dịch vụ Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
