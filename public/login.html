@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Nhập Quản Trị Hệ Thống</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="login-wrapper">
+        <div class="login-card">
+            <div class="login-header">
+                <h2>🔐 Admin Portal</h2>
+                <p>Hệ thống quản trị nội bộ</p>
+            </div>
+            
+            <div id="alertBox" class="alert hidden"></div>
+
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="username">Tên tài khoản</label>
+                    <input type="text" id="username" placeholder="Nhập username..." required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Mật khẩu</label>
+                    <input type="password" id="password" placeholder="Nhập password..." required>
+                </div>
+
+                <button type="submit" class="btn-submit">Đăng Nhập</button>
+            </form>
+
+            <div class="login-footer">
+                <a href="#" onclick="alert('Vui lòng liên hệ quản trị viên cấp cao để khôi phục mật khẩu!')">Quên mật khẩu?</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function handleLogin(event) {
+            event.preventDefault();
+            const user = document.getElementById('username').value.trim();
+            const pass = document.getElementById('password').value.trim();
+            const alertBox = document.getElementById('alertBox');
+
+            try {
+                const response = await fetch('/api/admin/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user, pass })
+                });
+                const data = await response.json();
+
+                alertBox.classList.remove('hidden');
+                if (data.success) {
+                    alertBox.className = 'alert success';
+                    alertBox.innerText = 'Đăng nhập thành công! Đang chuyển hướng...';
+                    setTimeout(() => { window.location.href = data.redirectUrl || '/dashboard'; }, 1000);
+                } else {
+                    alertBox.className = 'alert error';
+                    alertBox.innerText = data.msg || 'Sai tài khoản hoặc mật khẩu!';
+                }
+            } catch (err) {
+                alertBox.classList.remove('hidden');
+                alertBox.className = 'alert error';
+                alertBox.innerText = 'Lỗi kết nối đến máy chủ!';
+            }
+        }
+    </script>
+</body>
+</html>
