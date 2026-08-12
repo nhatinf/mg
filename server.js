@@ -8,8 +8,8 @@ const app = express();
 const PORT = 3000;
 
 setTimeout(function() {
-  window.location.href = "views/index.html";
-}, 3000); // 3000 mili-giây = 3 giây
+  window.location.href = "/views/index.html";
+}, 3000); // 2000 mili-giây = 2 giây
 
 
 // Cấu hình Middleware
