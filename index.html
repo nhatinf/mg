@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Quản Lý Sản Xuất Toàn Diện</title>
+    <!-- Tách biệt liên kết file style.css bên ngoài -->
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+    <div class="container">
+        <!-- BANNER HỆ THỐNG -->
+        <div class="banner">
+            <h1 id="sys-title">HỆ THỐNG QUẢN LÝ SẢN XUẤT TRUNG TÂM</h1>
+            <p id="sys-subtitle">Vui lòng đăng nhập quản trị cơ sở dữ liệu MongoDB</p>
+            <button id="logout-btn" class="btn btn-logout hidden" onclick="logout()">Đăng Xuất</button>
+        </div>
+
+        <!-- ==================== FORM XÁC THỰC (AUTH) ==================== -->
+        
+        <!-- ĐĂNG NHẬP -->
+        <div id="login-section" class="card auth-card">
+            <h2 class="auth-title">🔑 ĐĂNG NHẬP ADMIN</h2>
+            <div class="form-group">
+                <label>Tài khoản</label>
+                <input type="text" id="username" placeholder="Nhập tên tài khoản...">
+            </div>
+            <div class="form-group">
+                <label>Mật khẩu</label>
+                <input type="password" id="password" value="123">
+            </div>
+            <button class="btn btn-primary" onclick="login()">Vào Hệ Thống</button>
+            <div class="auth-links">
+                <a onclick="showAuthSection('register')">Đăng ký Admin</a> | 
+                <a onclick="showAuthSection('forgot')">Quên mật khẩu?</a>
+            </div>
+        </div>
+
+        <!-- TẠO TÀI KHOẢN ADMIN MỚI -->
+        <div id="register-section" class="card auth-card hidden">
+            <h2 class="auth-title" style="color: var(--success);">📝 TẠO TÀI KHOẢN ADMIN</h2>
+            <div class="form-group">
+                <label>Tài khoản mới</label>
+                <input type="text" id="reg-username" placeholder="Tên tài khoản mới...">
+            </div>
+            <div class="form-group">
+                <label>Mật khẩu quản trị</label>
+                <input type="password" id="reg-password" placeholder="Nhập mật khẩu...">
+            </div>
+            <div class="form-group">
+                <label>Phân quyền vai trò</label>
+                <select id="reg-role">
+                    <option value="Quản lý">Quản lý (Toàn quyền)</option>
+                    <option value="Tổ Trưởng">Tổ Trưởng</option>
+                    <option value="Nhân viên">Nhân viên</option>
+                </select>
+            </div>
+            <button class="btn btn-primary" style="background-color: var(--success);" onclick="register()">Xác Nhận Đăng Ký</button>
+            <div class="auth-links">
+                <a onclick="showAuthSection('login')">Quay lại Đăng nhập</a>
+            </div>
+        </div>
+
+        <!-- XỬ LÝ QUÊN MẬT KHẨU -->
+        <div id="forgot-section" class="card auth-card hidden">
+            <h2 class="auth-title" style="color: var(--danger);">🔒 KHÔI PHỤC MẬT KHẨU</h2>
+            <div class="form-group">
+                <label>Tài khoản cần đặt lại mật khẩu</label>
+                <input type="text" id="forgot-username" placeholder="Nhập tên tài khoản chính xác...">
+            </div>
+            <div class="form-group">
+                <label>Mật khẩu mới mong muốn</label>
+                <input type="password" id="forgot-new-password" placeholder="Nhập mật khẩu mới...">
+            </div>
+            <button class="btn btn-primary" style="background-color: var(--danger);" onclick="resetPassword()">Cập Nhật Mật Khẩu</button>
+            <div class="auth-links">
+                <a onclick="showAuthSection('login')">Quay lại Đăng nhập</a>
+            </div>
+        </div>
+
+
+        <!-- ==================== KHU VỰC DASHBOARD QUẢN TRỊ (SAU LOGIN) ==================== -->
+        <div id="dashboard-section" class="hidden">
+
+            <!-- HIỂN THỊ THÀNH PHẨM VÀ SỐ % TIẾN ĐỘ -->
+            <div class="card">
+                <h2>📦 Giám Sát Tiến Độ Thành Phẩm Toàn Nhà Máy</h2>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Mã Sản Phẩm</th>
+                                <th>Tên Sản Phẩm</th>
+                                <th>Loại</th>
+                                <th>Đã Thành Phẩm</th>
+                                <th>Số Lượng Đơn Hàng</th>
+                                <th style="width: 200px;">Tiến Độ Hàng Hóa (%)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="product-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <!-- KHỐI QUẢN LÝ: THÊM, SỬA, XÓA THÀNH VIÊN -->
+                <div id="sec-quanly-members" class="card hidden">
+                    <h2>👥 Thêm, Sửa, Xóa & Phân Quyền Thành Viên</h2>
+                    <input type="hidden" id="edit-member-id">
+                    <div class="form-group">
+                        <label>Tên nhân sự / Tài khoản</label>
+                        <input type="text" id="member-name" placeholder="Ví dụ: Trần Văn B">
+                    </div>
+                    <div class="form-group">
+                        <label>Mật khẩu (Nhập khi thêm mới hoặc chỉnh sửa)</label>
+                        <input type="password" id="member-password" placeholder="Nhập mật khẩu...">
+                    </div>
+                    <div class="form-group">
+                        <label>Quyền hạn điều hành</label>
+                        <select id="member-role">
+                            <option value="Quản lý">Quản lý</option>
+                            <option value="Tổ Trưởng">Tổ Trưởng</option>
+                            <option value="Nhân viên">Nhân viên</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-add" id="btn-save-member" onclick="saveMember()">Thêm Thành Viên</button>
+                    <button class="btn hidden" id="btn-cancel-edit" style="background-color:#7f8c8d" onclick="clearMemberForm()">Hủy</button>
+                    
+                    <div class="table-responsive" style="margin-top: 15px;">
+                        <table style="min-width: 100%;">
+                            <thead>
+                                <tr><th>Họ Tên</th><th>Quyền</th><th>Hành Động</th></tr>
+                            </thead>
+                            <tbody id="member-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- KHỐI QUẢN LÝ: NHẬP ĐƠN HÀNG & THÊM CÔNG ĐOẠN -->
+                <div id="sec-quanly-orders" class="card hidden">
+                    <h2>⚙️ Quản Lý Đơn Hàng & Công Đoạn Sản Xuất</h2>
+                    <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px dashed #ccc;">
+                        <h3>1. Nhập Số Lượng Đơn Đặt Hàng</h3>
+                        <div class="form-group">
+                            <label>Chọn Thành Phẩm</label>
+                            <select id="order-product-id"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Số lượng đơn hàng mới</label>
+                            <input type="number" id="order-qty" placeholder="Nhập số lượng đơn đặt...">
+                        </div>
+                        <button class="btn btn-add" onclick="updateOrderQty()">Cập Nhật Đơn Hàng</button>
+                    </div>
+                    <div>
+                        <h3>2. Thêm Công Đoạn Sản Xuất Mới</h3>
+                        <div class="form-group">
+                            <label>Tên Công Đoạn Mới</label>
+                            <input type="text" id="stage-name" placeholder="Ví dụ: Ủ Cao Tần, Cán nguội...">
+                        </div>
+                        <button class="btn btn-primary" style="padding: 8px;" onclick="addStage()">Thêm Công Đoạn</button>
+                        <p style="margin-top: 10px; font-size: 0.9rem;">Quy trình công đoạn: <strong id="stage-list"></strong></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KHỐI TỔ TRƯỞNG & NHÂN VIÊN: NHẬP SẢN LƯỢNG BÁN THÀNH PHẨM & THÀNH PHẨM -->
+            <div id="sec-staff-inputs" class="card hidden">
+                <h2>🛠️ Cập Nhật Sản Lượng Thực Tế (Tổ Trưởng / Nhân Viên)</h2>
+                <div class="grid-responsive">
+                    <div style="background: #fffdf3; padding: 15px; border-radius: 6px; border: 1px solid #f1c40f;">
+                        <h3>🔶 Nhập Số Lượng Bán Thành Phẩm</h3>
+                        <div class="form-group" style="margin-top: 10px;">
+                            <label>Mã công đoạn hoặc Lô hàng dở dang</label>
+                            <input type="text" id="semi-batch" placeholder="Nhập mã lô hàng dở dang...">
+                        </div>
+                        <div class="form-group">
+                            <label>Số lượng hoàn thành công đoạn (Kg)</label>
+                            <input type="number" id="semi-qty" placeholder="Sản lượng thực tế...">
+                        </div>
+                        <button class="btn" style="background-color: var(--warning); color: #222;" onclick="reportSemiQty()">Ghi Nhận Bán Thành Phẩm</button>
+                    </div>
+
+                    <div style="background: #f3fff7; padding: 15px; border-radius: 6px; border: 1px solid #2ecc71;">
+                        <h3>🟢 Nhập Số Lượng Thành Phẩm Đạt Chuẩn</h3>
+                        <div class="form-group" style="margin-top: 10px;">
+                            <label>Chọn mã thành phẩm kiểm định</label>
+                            <select id="report-product-id"></select>
+                        </div>
