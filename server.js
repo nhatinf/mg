@@ -6,46 +6,75 @@ const path = require('path');
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Kết nối Cơ sở dữ liệu MongoDB vĩnh viễn
-mongoose.connect('mongodb://127.0.0.1:27017/admin_portal_db')
-    .then(() => console.log('Đã kết nối MongoDB thành công!'))
-    .catch(err => console.error('Lỗi kết nối MongoDB:', err));
+// Giả lập session đơn giản bằng bộ nhớ cục bộ biến toàn cục
+let currentAdminUser = null;
 
-// Định nghĩa Schema quản trị viên
-const AdminSchema = new mongoose.Schema({
-    user: { type: String, unique: true, required: true },
-    pass: { type: String, required: true }
+mongoose.connect('mongodb://127.0.0.1:27017/admin_dashboard_db')
+    .then(() => console.log('MongoDB connected!'));
+
+const UserSchema = new mongoose.Schema({
+    user: { type: String, unique: true },
+    pass: String,
+    role: { type: String, enum: ['Quản lý', 'Tổ Trưởng', 'Nhân viên', 'Admin'] },
+    permissions: [String] // lưu các giá trị checkbox
 });
-const Admin = mongoose.model('Admin', AdminSchema);
+const UserModel = mongoose.model('AdminUserSystem', UserSchema);
 
-// Khởi tạo tài khoản Admin mặc định nếu chưa có trong DB
-async function seedAdmin() {
-    const count = await Admin.countDocuments();
-    if (count === 0) {
-        await Admin.create({ user: 'admin', pass: 'admin123' });
-        console.log('Tài khoản admin mặc định được tạo: admin / admin123');
+// Seed admin mặc định
+async function seed() {
+    if(await UserModel.countDocuments({ role: 'Admin' }) === 0) {
+        await UserModel.create({ user: 'admin', pass: 'admin123', role: 'Admin', permissions: ['nhap_don_hang', 'them_cong_doan'] });
     }
 }
-seedAdmin();
+seed();
 
-// API xử lý đăng nhập Backend
-app.post('/api/admin/login', async (req, res) => {
+// API Auth & Quên/Đổi pass
+app.post('/api/login', async (req, res) => {
     const { user, pass } = req.body;
-    try {
-        const adminUser = await Admin.findOne({ user, pass });
-        if (adminUser) {
-            res.json({ success: true, msg: 'Đăng nhập thành công!', redirectUrl: '/dashboard.html' });
-        } else {
-            res.json({ success: false, msg: 'Tài khoản hoặc mật khẩu không chính xác!' });
-        }
-    } catch (error) {
-        res.status(500).json({ success: false, msg: 'Lỗi hệ thống server!' });
-    }
+    const u = await UserModel.findOne({ user, pass });
+    if(u) { currentAdminUser = u; res.json({ success: true }); }
+    else res.json({ success: false, msg: 'Sai tài khoản hoặc mật khẩu!' });
 });
 
-// Chạy ứng dụng web server
-app.listen(3000, () => {
-    console.log('Server đang chạy tại http://localhost:3000');
+app.post('/api/forgot', async (req, res) => {
+    const u = await UserModel.findOne({ user: req.body.user });
+    if(u) { u.pass = '123456'; await u.save(); res.json({ success: true, msg: 'Đã cấp mật khẩu mới: 123456' }); }
+    else res.json({ success: false, msg: 'Không tìm thấy tài khoản!' });
 });
+
+app.post('/api/change-password', async (req, res) => {
+    if(!currentAdminUser) return res.json({ success: false, msg: 'Chưa đăng nhập!' });
+    const { oldPass, newPass } = req.body;
+    const u = await UserModel.findById(currentAdminUser._id);
+    if(u.pass === oldPass) {
+        u.pass = newPass; await u.save();
+        res.json({ success: true, msg: 'Đổi mật khẩu thành công!' });
+    } else res.json({ success: false, msg: 'Mật khẩu cũ không đúng!' });
+});
+
+app.get('/api/logout', (req, res) => { currentAdminUser = null; res.json({ success: true }); });
+
+// API CRUD Thành viên & Phân quyền Checkbox
+app.get('/api/users', async (req, res) => { res.json(await UserModel.find({ role: { $ne: 'Admin' } })); });
+
+app.post('/api/users', async (req, res) => {
+    try {
+        await UserModel.create(req.body);
+        res.json({ success: true });
+    } catch(e) { res.json({ success: false, msg: 'Tài khoản tồn tại!' }); }
+});
+
+app.put('/api/users/:id', async (req, res) => {
+    await UserModel.findByIdAndUpdate(req.params.id, { role: req.body.role, permissions: req.body.permissions });
+    res.json({ success: true });
+});
+
+app.delete('/api/users/:id', async (req, res) => {
+    await UserModel.findByIdAndDelete(req.params.id);
+    res.json({ success: true });
+});
+
+app.listen(3000, () => console.log('Server running at http://localhost:3000/login.html'));
