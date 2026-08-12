@@ -31,6 +31,30 @@ async function seed() {
 }
 seed();
 
+
+// Thêm API xử lý đăng ký tài khoản Admin mới lưu vào MongoDB
+app.post('/api/register-admin', async (req, res) => {
+    const { user, pass } = req.body;
+    if (!user || !pass) {
+        return res.json({ success: false, msg: 'Vui lòng điền đầy đủ tài khoản và mật khẩu!' });
+    }
+    try {
+        const existing = await UserModel.findOne({ user });
+        if (existing) {
+            return res.json({ success: false, msg: 'Tên tài khoản này đã tồn tại trong hệ thống!' });
+        }
+        await UserModel.create({ 
+            user, 
+            pass, 
+            role: 'Admin', 
+            permissions: ['nhap_don_hang', 'them_cong_doan', 'nhap_ban_thanh_pham', 'nhap_thanh_pham'] 
+        });
+        res.json({ success: true, msg: 'Đăng ký tài khoản Admin thành công!' });
+    } catch (e) {
+        res.json({ success: false, msg: 'Lỗi hệ thống khi tạo tài khoản!' });
+    }
+});
+
 // API Auth & Quên/Đổi pass
 app.post('/api/login', async (req, res) => {
     const { user, pass } = req.body;
