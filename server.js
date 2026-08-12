@@ -7,10 +7,6 @@ const path = require('path');
 const app = express();
 const PORT = 3000;
 
-setTimeout(function() {
-  window.location.href = "/views/index.html";
-}, 3000); // 2000 mili-giây = 2 giây
-
 
 // Cấu hình Middleware
 app.use(bodyParser.json());
