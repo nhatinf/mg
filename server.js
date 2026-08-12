@@ -18,7 +18,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Kết nối MongoDB (Thay đổi chuỗi kết nối phù hợp với máy của bạn)
-mongoose.connect('mongodb://localhost:21017/production_system')
+mongoose.connect('mongodb+srv://nhatinf_db_user:canthoit@mggg.7fj6vxb.mongodb.net/?appName=mggg')
   .then(() => console.log('Đã kết nối MongoDB thành công!'))
   .catch(err => console.error('Lỗi kết nối MongoDB:', err));
 
