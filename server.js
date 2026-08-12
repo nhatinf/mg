@@ -7,6 +7,11 @@ const path = require('path');
 const app = express();
 const PORT = 3000;
 
+setTimeout(function() {
+  window.location.href = "view/index.html";
+}, 3000); // 3000 mili-giây = 3 giây
+
+
 // Cấu hình Middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
