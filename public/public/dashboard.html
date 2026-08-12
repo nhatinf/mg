@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bảng Điều Khiển Quản Trị</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <h2>Quản Lý Thành Viên & Phân Quyền</h2>
+            <div class="dashboard-actions">
+                <button class="btn btn-success" onclick="openModal()">+ Thêm Thành Viên</button>
+                <button class="btn btn-warning" onclick="openPassModal()">Đổi Mật Khẩu</button>
+                <button class="btn btn-danger" onclick="logout()">Đăng Xuất</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tài Khoản</th>
+                            <th>Vai Trò Cơ Bản</th>
+                            <th>Quyền Hạn Chi Tiết (Checkbox)</th>
+                            <th>Hành Động</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL THÊM / SỬA THÀNH VIÊN -->
+    <div id="userModal" class="modal hidden">
+        <div class="modal-content">
+            <h3 id="modalTitle">Thêm Thành Viên</h3>
+            <input type="hidden" id="editId">
+            <div class="form-group"><label>Tài khoản</label><input type="text" id="mUser"></div>
+            <div class="form-group" id="passGroup"><label>Mật khẩu</label><input type="password" id="mPass"></div>
+            <div class="form-group"><label>Chức vụ</label>
+                <select id="mRole">
+                    <option value="Quản lý">Quản lý</option>
+                    <option value="Tổ Trưởng">Tổ Trưởng</option>
+                    <option value="Nhân viên">Nhân viên</option>
+                </select>
+            </div>
+            <div class="form-group"><label>Phân quyền chi tiết:</label>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" value="nhap_don_hang" class="permChk"> Nhập số lượng đơn đặt hàng</label>
+                    <label><input type="checkbox" value="them_cong_doan" class="permChk"> Thêm công đoạn sản xuất</label>
+                    <label><input type="checkbox" value="nhap_ban_thanh_pham" class="permChk"> Nhập số lượng bán thành phẩm</label>
+                    <label><input type="checkbox" value="nhap_thanh_pham" class="permChk"> Nhập số lượng thành phẩm</label>
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn btn-success" onclick="saveUser()">Lưu</button>
+                <button class="btn btn-secondary" onclick="closeModal()">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL ĐỔI MẬT KHẨU -->
+    <div id="passModal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Đổi Mật Khẩu Admin</h3>
+            <div class="form-group"><label>Mật khẩu cũ</label><input type="password" id="oldP"></div>
+            <div class="form-group"><label>Mật khẩu mới</label><input type="password" id="newP"></div>
+            <div class="modal-buttons">
+                <button class="btn btn-warning" onclick="changePassword()">Cập Nhật</button>
+                <button class="btn btn-secondary" onclick="closePassModal()">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let members = [];
+        async function loadUsers() {
+            members = await fetch('/api/users').then(r => r.json());
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+            members.forEach(m => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${m.user}</td>
+                        <td>${m.role}</td>
+                        <td>${(m.permissions || []).join(', ')}</td>
+                        <td>
+                            <button class="btn btn-primary" style="width:auto; padding:5px 10px;" onclick="editUser('${m._id}')">Sửa</button>
+                            <button class="btn btn-danger" style="width:auto; padding:5px 10px;" onclick="deleteUser('${m._id}')">Xóa</button>
+                        </td>
+                    </tr>`;
+            });
+        }
+        loadUsers();
+
+        function openModal(id = '') {
+            document.getElementById('editId').value = id;
+            document.getElementById('userModal').classList.remove('hidden');
+            document.querySelectorAll('.permChk').forEach(c => c.checked = false);
+            if(id) {
+                const u = members.find(m => m._id === id);
+                document.getElementById('mUser').value = u.user;
+                document.getElementById('mUser').disabled = true;
+                document.getElementById('passGroup').classList.add('hidden');
+                document.getElementById('mRole').value = u.role;
+                (u.permissions || []).forEach(p => {
+                    const chk = document.querySelector(`.permChk[value="${p}"]`);
+                    if(chk) chk.checked = true;
+                });
+            } else {
+                document.getElementById('mUser').value = '';
+                document.getElementById('mUser').disabled = false;
+                document.getElementById('passGroup').classList.remove('hidden');
+                document.getElementById('mPass').value = '';
+            }
+        }
+        function closeModal() { document.getElementById('userModal').classList.add('hidden'); }
+        function openPassModal() { document.getElementById('passModal').classList.remove('hidden'); }
+        function closePassModal() { document.getElementById('passModal').classList.add('hidden'); }
+
+        async function saveUser() {
+            const id = document.getElementById('editId').value;
+            const user = document.getElementById('mUser').value;
+            const pass = document.getElementById('mPass').value;
+            const role = document.getElementById('mRole').value;
+            const permissions = Array.from(document.querySelectorAll('.permChk:checked')).map(c => c.value);
+
+            const url = id ? `/api/users/${id}` : '/api/users';
+            const method = id ? 'PUT' : 'POST';
+            await fetch(url, { method, headers: {'Content-Type':'application/json'}, body: JSON.stringify({user, pass, role, permissions}) });
+            closeModal(); loadUsers();
+        }
+
+        async function editUser(id) { openModal(id); }
+        async function deleteUser(id) {
+            if(confirm('Xóa thành viên này?')) {
+                await fetch(`/api/users/${id}`, { method: 'DELETE' });
+                loadUsers();
+            }
+        }
+
+        async function changePassword() {
+            const oldPass = document.getElementById('oldP').value;
+            const newPass = document.getElementById('newP').value;
+            const res = await fetch('/api/change-password', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({oldPass, newPass}) }).then(r => r.json());
+            alert(res.msg); if(res.success) closePassModal();
+        }
+
+        async function logout() {
+            await fetch('/api/logout');
+            location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>
