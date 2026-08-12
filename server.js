@@ -12,7 +12,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Giả lập session đơn giản bằng bộ nhớ cục bộ biến toàn cục
 let currentAdminUser = null;
 
-mongoose.connect('mongodb://127.0.0.1:27017/admin_dashboard_db')
+mongoose.connect('mongodb+srv://nhatinf_db_user:canthoit@mggg.7fj6vxb.mongodb.net/?appName=mggg')
     .then(() => console.log('MongoDB connected!'));
 
 const UserSchema = new mongoose.Schema({
