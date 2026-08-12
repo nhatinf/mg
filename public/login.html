@@ -3,68 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng Nhập Quản Trị Hệ Thống</title>
+    <title>Đăng Nhập Quản Trị</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <div class="login-wrapper">
-        <div class="login-card">
-            <div class="login-header">
-                <h2>🔐 Admin Portal</h2>
-                <p>Hệ thống quản trị nội bộ</p>
-            </div>
-            
-            <div id="alertBox" class="alert hidden"></div>
-
-            <form id="loginForm" onsubmit="handleLogin(event)">
-                <div class="form-group">
-                    <label for="username">Tên tài khoản</label>
-                    <input type="text" id="username" placeholder="Nhập username..." required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="password">Mật khẩu</label>
-                    <input type="password" id="password" placeholder="Nhập password..." required>
-                </div>
-
-                <button type="submit" class="btn-submit">Đăng Nhập</button>
-            </form>
-
-            <div class="login-footer">
-                <a href="#" onclick="alert('Vui lòng liên hệ quản trị viên cấp cao để khôi phục mật khẩu!')">Quên mật khẩu?</a>
-            </div>
+<body class="auth-body">
+    <div class="login-card">
+        <div class="login-header">
+            <h2>🔐 Đăng Nhập Admin</h2>
         </div>
+        <div id="alertBox" class="alert hidden"></div>
+
+        <!-- FORM LOGIN -->
+        <form id="formLogin" onsubmit="loginAdmin(event)">
+            <div class="form-group"><label>Tên tài khoản</label><input type="text" id="logUser" required></div>
+            <div class="form-group"><label>Mật khẩu</label><input type="password" id="logPass" required></div>
+            <button type="submit" class="btn btn-primary">Đăng Nhập</button>
+            <p style="text-align:center; margin-top:15px; font-size:13px; cursor:pointer; color:#3498db;" onclick="toggleForm('forgot')">Quên mật khẩu?</p>
+        </form>
+
+        <!-- FORM QUÊN MẬT KHẨU -->
+        <form id="formForgot" class="hidden" onsubmit="forgotPassword(event)">
+            <div class="form-group"><label>Tài khoản cần cấp lại pass</label><input type="text" id="forUser" required></div>
+            <button type="submit" class="btn btn-warning">Gửi mật khẩu mới (123456)</button>
+            <p style="text-align:center; margin-top:15px; font-size:13px; cursor:pointer; color:#3498db;" onclick="toggleForm('login')">Quay lại đăng nhập</p>
+        </form>
     </div>
 
     <script>
-        async function handleLogin(event) {
-            event.preventDefault();
-            const user = document.getElementById('username').value.trim();
-            const pass = document.getElementById('password').value.trim();
-            const alertBox = document.getElementById('alertBox');
+        function toggleForm(type) {
+            document.getElementById('formLogin').classList.toggle('hidden', type !== 'login');
+            document.getElementById('formForgot').classList.toggle('hidden', type !== 'forgot');
+            document.getElementById('alertBox').classList.add('hidden');
+        }
 
-            try {
-                const response = await fetch('/api/admin/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ user, pass })
-                });
-                const data = await response.json();
-
-                alertBox.classList.remove('hidden');
-                if (data.success) {
-                    alertBox.className = 'alert success';
-                    alertBox.innerText = 'Đăng nhập thành công! Đang chuyển hướng...';
-                    setTimeout(() => { window.location.href = data.redirectUrl || '/dashboard'; }, 1000);
-                } else {
-                    alertBox.className = 'alert error';
-                    alertBox.innerText = data.msg || 'Sai tài khoản hoặc mật khẩu!';
-                }
-            } catch (err) {
-                alertBox.classList.remove('hidden');
-                alertBox.className = 'alert error';
-                alertBox.innerText = 'Lỗi kết nối đến máy chủ!';
+        async function loginAdmin(e) {
+            e.preventDefault();
+            const user = document.getElementById('logUser').value;
+            const pass = document.getElementById('logPass').value;
+            const res = await fetch('/api/login', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({user, pass}) }).then(r => r.json());
+            
+            const box = document.getElementById('alertBox');
+            box.classList.remove('hidden');
+            if(res.success) {
+                box.className = 'alert success'; box.innerText = 'Đăng nhập thành công!';
+                setTimeout(() => location.href = 'dashboard.html', 800);
+            } else {
+                box.className = 'alert error'; box.innerText = res.msg;
             }
+        }
+
+        async function forgotPassword(e) {
+            e.preventDefault();
+            const user = document.getElementById('forUser').value;
+            const res = await fetch('/api/forgot', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({user}) }).then(r => r.json());
+            const box = document.getElementById('alertBox');
+            box.classList.remove('hidden');
+            box.className = res.success ? 'alert success' : 'alert error';
+            box.innerText = res.msg;
         }
     </script>
 </body>
