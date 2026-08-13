@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Đăng Nhập Database Online</title>
+    <style>
+        body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background: #eef2f3; }
+        .box { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 320px; }
+        input { width: 100%; padding: 10px; margin: 10px 0; box-sizing: border-box; border: 1px solid #ccc; border-radius: 5px; }
+        button { width: 100%; padding: 10px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #218838; }
+        .switch { text-align: center; margin-top: 15px; cursor: pointer; color: #007BFF; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2 id="title" style="text-align:center;">Đăng Nhập</h2>
+        <input type="text" id="username" placeholder="Tên tài khoản">
+        <input type="password" id="password" placeholder="Mật khẩu">
+        <button id="submitBtn" onclick="handleSubmit()">Đăng Nhập</button>
+        <div class="switch" onclick="toggleMode()">Chưa có tài khoản? Đăng ký ngay</div>
+        <p id="message" style="text-align: center; font-weight: bold; margin-top: 15px;"></p>
+    </div>
+
+    <script>
+        let isLogin = true;
+        function toggleMode() {
+            isLogin = !isLogin;
+            document.getElementById('title').innerText = isLogin ? 'Đăng Nhập' : 'Đăng Ký';
+            document.getElementById('submitBtn').innerText = isLogin ? 'Đăng Nhập' : 'Đăng Ký';
+            document.querySelector('.switch').innerText = isLogin ? 'Chưa có tài khoản? Đăng ký ngay' : 'Đã có tài khoản? Đăng nhập';
+        }
+
+        async function handleSubmit() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const endpoint = isLogin ? '/api/login' : '/api/register';
+
+            try {
+                const res = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await res.json();
+                document.getElementById('message').style.color = data.success ? 'green' : 'red';
+                document.getElementById('message').innerText = data.message;
+            } catch (e) {
+                document.getElementById('message').style.color = 'red';
+                document.getElementById('message').innerText = 'Không thể kết nối đến Server!';
+            }
+        }
+    </script>
+</body>
+</html>
